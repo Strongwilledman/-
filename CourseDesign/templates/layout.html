@@ -1,0 +1,99 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/css/bootstrap.css"></script>
+    <script src="/static/js/jquery-3.3.1.js"></script>
+    <style>
+        body{
+            padding: 0px;
+            margin: 0px;
+            font-family:verdana,helvetica,arial,sans-serif;
+            font-size:12px;
+        }
+        .hide{
+            display: none;
+        }
+        .menu .item{
+            display: block;
+            padding:10px 30px;
+            border-bottom: 1px solid #dddddd;
+        }
+        .menu .item:hover{
+            background-color: #f9d65f;
+            color: white;
+        }
+        .menu .item.active{
+            background-color: #f9d65f;
+            color: white;
+        }
+        .modal1{
+            position: fixed;
+            top:50%;
+            left:50%;
+            width: 500px;
+            height: 400px;
+            margin-top: -250px;
+            margin-left: -250px;
+            z-index: 100;
+            background-color: #dddddd;
+            border-radius: 3%;
+        }
+        .shade{
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 99;
+            background-color: #000000;
+            opacity: 0.5;
+
+        }
+        .remove{
+            position: fixed;
+            top:50%;
+            left:50%;
+            width: 400px;
+            height: 200px;
+            margin-top: -100px;
+            margin-left: -200px;
+            z-index: 100;
+            background-color: #e4b9b9;
+        }
+        nav ul li{
+            display: inline;
+        }
+        nav ul li a{
+            text-decoration: none;
+        }
+        .demo-info{
+            padding:0 0 12px 0;
+        }
+        .demo-tip{
+            display:none;
+        }
+    </style>
+    {% block css %}{% endblock%}
+</head>
+
+<body>
+    <div class="row" style="height: 40px;background-color: #91cbec;color: white">
+        <div style="float: right">用户名: {{ username }} | <a href="logout.html" style="text-decoration: none">注销</a></div>
+    </div>
+    <div>
+        <div class="menu" style="position: absolute;top: 40px;width: 200px">
+            <a id="menu_classes" class="item" href="classes.html" style="text-decoration: none">班级管理</a>
+            <a id="menu_student" class="item" href="student.html" style="text-decoration: none">学生管理</a>
+            <a id="menu_teacher" class="item" href="teacher.html" style="text-decoration: none">教师管理</a>
+        </div>
+        <div style="position: absolute;top: 40px;left: 200px;right: 0;overflow: auto">
+            {% block content %}{% endblock%}
+        </div>
+    </div>
+
+    {% block js %}{% endblock%}
+</body>
+</html>

@@ -1,0 +1,74 @@
+{%  extends "layout.html" %}
+
+{% block css %}
+    <style>
+        .tag{
+            display: inline-block;
+            padding: 5px;
+            border: 1px solid red;
+            background-color: lightpink;
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>老师列表</h1>
+    <div>
+        <a href="add_teacher.html">添加</a>
+    </div>
+    <table style="border-spacing:20px;border-color:#dddddd;">
+        <thead>
+            <tr>
+                <th>教师ID</th>
+                <th>教师姓名</th>
+                <th>教师课程</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for dic in teacher_list.values %}
+                <tr>
+                    <td ugor="id">{{ dic.nid }}</td>
+                    <td ugor="name">{{ dic.name }}</td>
+                    <td >
+                        {% for c in dic.cls_list %}
+                            <span class="tag" nid="{{ c.id }}">{{ c.caption }}</span>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        <a href="edit_teacher-{{ dic.nid }}.html">编辑</a>|
+                        <a class="tch-delete">删除</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+
+{% block js%}
+    <script>
+        $(function () {
+            $('#menu_teacher').addClass('active');
+            bindTchDeleteEvent();
+        });
+        function bindTchDeleteEvent() {
+                $('tbody').on('click','.tch-delete',function () {
+                    $(this).parent().prevAll().each(function () {
+                        var text = $(this).text();
+                        var name = $(this).attr('ugor');
+                        $.ajax({
+                            url:"teacher.html",
+                            type:'POST',
+                            data:{id:text,name:name},
+                            dataType:"JSON",
+                            success:function (rep) {
+                                location.reload();
+                            }
+
+                        })
+                    })
+                })
+            }
+    </script>
+{% endblock %}

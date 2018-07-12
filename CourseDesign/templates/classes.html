@@ -1,0 +1,247 @@
+{%  extends "layout.html" %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+    <div class="shade hide"></div>
+    <div>
+        <h3 style="color: #9d9d9d;padding: 10px">班级管理</h3>
+        <input id="id_add" type="button" value="添加"/>
+    </div>
+    <table style="border-spacing:20px;border-color:#dddddd;">
+        <thead>
+            <tr>
+                <th>班级编号</th>
+                <th>班级名</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody id="clscontent">
+           {% for item in class_list %}
+               <tr>
+                   <td ugor="id">{{ item.id }}</td>
+                   <td ugor="caption">{{ item.caption }}</td>
+                   <td><a style="color: #f0ad4e;text-decoration: none" class="td-edit" >编辑</a>
+                       | <a class="td-delete" style="color: #f0ad4e;text-decoration: none">删除</a></td>
+               </tr>
+           {% endfor %}
+        </tbody>
+
+
+    </table>
+    <div class="modal1 hide">
+        <form class="addclass" method="post" action="classes.html">
+            <div>
+                班级编号<input name="id" type="text"/>
+                班级名称<input name="caption" type="text"/>
+            </div>
+            <div>
+                <input type="button" value="确认修改" id="modify" class="hide"/>
+                <input type="button" value="确定" id="modal_ajax_submit"/>
+                <input id="id_cancel" type="button" value="取消"/>
+            </div>
+
+        </form>
+    </div>
+
+    <nav aria-label="Page navigation">
+
+        <ul class="pagination">
+            {% if contacts.has_previous %}
+                <li style="list-style-type: none">
+                     <a href="?page={{ contacts.previous_page_number }}" >
+                    <span aria-hidden="true"><</span> </a>
+                </li>
+            {% endif %}
+
+            {% for pg in class_list.paginator.page_range %}
+                {% if class_list.number == pg %}
+                    <li class="active" style="list-style-type: none"><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                 {% else %}
+                    <li style="list-style-type: none"><a href="?page={{ pg }}">{{ pg }}</a> </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if class_list.has_next %}
+                <li style="list-style-type: none">
+                    <a href="?page={{ class_list.next_page_number }}" >
+                        <span aria-hidden="true">></span></a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+    <div class="remove hide">
+        <input id="id_remove_summit" type="button" value="确定"/>
+        <input id="id_remove_cancel" type="button" value="取消"/>
+    </div>
+{% endblock %}
+
+
+
+{% block js%}
+     <script>
+        $(function () {
+            $('#menu_classes').addClass('active');
+            bindAddEvent();
+            bindCancelEvent();
+            bindSubmitEvent();
+            bindTdDeleteEvent();
+            bindEditEvent();
+            bindSearchEvent();
+        });
+
+        function bindAddEvent() {
+            $('#id_add').click(function () {
+                $('.modal1,.shade').removeClass('hide');
+            })
+        }
+        function bindCancelEvent() {
+            $('#id_cancel,#id_remove_cancel').click(function () {
+                $('.modal1,.shade,.remove').addClass('hide');
+            })
+        }
+
+        function  bindTdDeleteEvent() {
+            /*
+            $('td .td-delete').click(function () {
+                $('.remove,.shade').removeClass('hide');
+            })
+            */
+            /* 委托式添加 */
+            $('tbody').on('click', '.td-delete', function () {
+                /*$('.remove,.shade').removeClass('hide');
+                $('#id_remove_summit').click(function () {
+                    $(this).parent().prevAll().each(function () {
+                        var text = $(this).text();
+                        var name = $(this).attr('ugor');
+                        var but = "del";
+                        alert(text,name);
+                        $.ajax({
+                            url:"classes.html",
+                            type:'POST',
+                            data:{id:text,caption:name,buttonname:but},
+                            dataType:"JSON",
+                            success:function (rep) {
+                                if(!rep.status){
+                                    alert(rep.error);
+                                }
+                                else{
+                                    location.reload();
+                                }
+                            }
+                        });
+                    });
+                 });*/
+                $(this).parent().prevAll().each(function () {
+                    var text = $(this).text();
+                    var name = $(this).attr('ugor');
+                    var but = "del";
+                    {#alert(text,name);#}
+                    $.ajax({
+                        url:"classes.html",
+                        type:'POST',
+                        data:{id:text,caption:name,buttonname:but},
+                        dataType:"JSON",
+                        success:function (rep) {
+                            if(!rep.status){
+                                alert(rep.error);
+                            }
+                            else{
+                                location.reload();
+                            }
+                        }
+                    });
+                });
+            });
+
+        }
+
+        function bindSubmitEvent() {
+            $('#modal_ajax_submit').click(function () {
+                var value1 = $('.modal1 input[name="id"]').val();
+                var value2 = $('.modal1 input[name="caption"]').val();
+                /* 区分是添加还是修改 */
+                var but = "add";
+                $.ajax({
+                        url:"classes.html",
+                        type:'POST',
+                        data:{id:value1,caption:value2,buttonname:but},
+                        dataType:"JSON",
+                        success:function (rep) {
+                            if(!rep.status){
+                                alert(rep.error);
+                            }else{
+                                location.reload();
+                                //通过js向表格追加数据
+                                /*
+                                var tr = document.createElement('tr');
+                                var td1 = document.createElement('td');
+                                td1.innerHTML = rep.data.id;
+                                var td2 = document.createElement('td');
+                                td2.innerHTML = rep.data.caption;
+                                var td3 = document.createElement('td');
+                                td3.innerText = '|';
+                                var a1 = document.createElement('a');
+                                a1.innerHTML = "编辑";
+                                a1.className = "td-edit";
+                                var a2 = document.createElement('a');
+                                a2.className = "td-delete";
+                                a2.innerHTML = "删除";
+                                $(td3).prepend(a1);
+                                $(td3).append(a2);
+                                $(tr).append(td1);
+                                $(tr).append(td2);
+                                $(tr).append(td3);
+                                $('table tbody').append(tr);
+
+                                $('.modal1,.shade').addClass('hide');*/
+                            }
+                        }
+                    }
+                )
+            })
+            $('#modify').click(function () {
+                var value1 = $('.modal1 input[name="id"]').val();
+                var value2 = $('.modal1 input[name="caption"]').val();
+
+                /* 区分是添加还是修改 */
+                var but = "edit";
+                $.ajax({
+                    url:"classes.html",
+                    type:'POST',
+                    data:{id:value1,caption:value2,buttonname:but},
+                    dataType:"JSON",
+                    success:function(rep){
+                        if(!rep.status){
+                                alert(rep.error);
+                            }else{
+                                location.reload();
+                               /* $('.modal1 input[name="caption"]').text(value2);
+                                $('.modal1,.shade').addClass('hide');*/
+                            }
+                    }
+                })
+            })
+        }
+        function bindEditEvent() {
+           $('tbody').on('click','.td-edit',function () {
+               $('.modal1,.shade').removeClass('hide');
+               $('#modify').removeClass('hide');
+               $('#modal_ajax_submit').addClass('hide');
+               $(this).parent().prevAll().each(function () {
+                   var text = $(this).text();
+                   var name = $(this).attr('ugor');
+                   {#alert(typeof (text));#}
+                   {#alert(text,name);#}
+                   $('.modal1 input[name="'+name+'"]').val(text);
+                   $('.modal1 input[name="id"]').attr('disabled','false');
+               })
+           })
+        }
+
+    </script>
+{% endblock %}

@@ -1,0 +1,40 @@
+1、项目打开:用pycharm导入项目
+
+2、数据库准备
+
+	项目使用的数据库：MySql
+	用户名：root
+	密码：root
+	数据库名称：data
+
+	如果需要改动则只需在项目目录中CourseDesign->settings.py里面
+	找到
+
+	DATABASES = {
+    	'default': {
+      	  'ENGINE': 'django.db.backends.mysql',
+ 	       'NAME':'data',
+	        'USER':'root',
+ 	       'PASSWORD':'root',
+ 	       'HOST':'127.0.0.1',
+ 	       'PORT':'3306',
+	    }
+	}
+
+	修改相应的数据即可
+
+3、修改完然后在pycharm控制台写入命令
+
+	manage.py makemigrations
+	manage.py migrate
+	就可以同步数据库
+	(或者在pycharm选项卡tools->run manage.py task 就可以直接写入makemigrations和migrate)
+
+4、最后执行命令
+
+	runserver 端口号
+   就可以打开网页了
+	登陆页@localhost:8000/login.html
+
+备注：同步数据库如果失败则直接把ManageSystem中migrations文件夹 除了__init__.py之外的文件删除
+	然后再重新执行一遍操作即可
